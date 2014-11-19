@@ -1,8 +1,8 @@
 =====
-django-hashlink
+django-hashphrase
 =====
 
-Hashlink is a django module that facilitates the process that
+django-hashphrase is a django module that facilitates the process that
 users click on a link in an email and django handles the click.
 Hashlink makes it easy to generate such a link, authenticate it or not,
 calls a custom function or not, etc.
@@ -10,20 +10,20 @@ calls a custom function or not, etc.
 Quick start
 -----------
 
-1. Add "hashlink" to your INSTALLED_APPS setting like this::
+1. Add "hashphrase" to your INSTALLED_APPS setting like this::
 
     INSTALLED_APPS = (
         ...
-        'hashlink',
+        'hashphrase',
     )
 
-2. Include the hashlink URLconf in your project urls.py like this::
+2. Include the hashphrase URLconf in your project urls.py like this::
 
-    url(r'^hl/', include('hashlink.urls')),
+    url(r'^hl/', include('hashphrase.urls')),
 
 3. To generate a link::
 
-    from hashlink.models import HashLink
+    from hashphrase.models import HashLink
 
     from django.contrib.auth.models import User
     any_object = User.objects.get(id=1)
@@ -37,11 +37,11 @@ Quick start
 
 4. To register a function::
 
-    from hashlink import hashlink_register
-    @hashlink_register('my_click_handler')
+    from hashphrase import hashphrase_register
+    @hashphrase_register('my_click_handler')
     def test_success(request, has_error, error_msg, hash_link, content_obj):
         """
-        use hashlink_register decorator to register this function to be called when
+        use hashphrase_register decorator to register this function to be called when
         users click on the email link.
         be sure to check has_error. If not verified, has_error = True
         See HashLink class for error code definition

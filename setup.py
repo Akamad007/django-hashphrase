@@ -15,7 +15,7 @@ setup(
     license='BSD License',  # example license
     description='A Django app to facilitate email links',
     long_description=README,
-    url='http://www.example.com/',
+    url='n/a',
     download_url='https://github.com/peiwei/django-hashlink/tarball/0.1',
     author='Pei-Wei Wu',
     author_email='peiwei.wu@gmail.com',

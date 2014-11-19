@@ -5,9 +5,6 @@ class Hashlink(object):
         super(Hashlink, self).__init__()
 
         self.function_map ={}
-        #    "alert" : ["gradsite.hashphrase.views", "remove_me_from_this_alert_observer"],
-        #    "alert_advisor": ["gradsite.hashphrase.views", "remove_me_from_my_student_alert_observer"]
-        #}
 
 
     def register(self, category_name, function):

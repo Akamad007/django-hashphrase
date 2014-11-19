@@ -16,6 +16,7 @@ setup(
     description='A Django app to facilitate email links',
     long_description=README,
     url='http://www.example.com/',
+    download_url='https://github.com/peiwei/django-hashlink/tarball/0.1',
     author='Pei-Wei Wu',
     author_email='peiwei.wu@gmail.com',
     classifiers=[

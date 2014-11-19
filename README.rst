@@ -29,7 +29,6 @@ Quick start
     any_object = User.objects.get(id=1)
 
     import datetime
-    cur_datetime = hashlink_functions.current_datetime_function()
     action = 'my_click_handler'
     hash_phrase = HashLink.gen_key(request.user, any_object, datetime.datetime.now(), action=action)
 

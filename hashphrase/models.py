@@ -10,13 +10,16 @@ def _correct_import(name):
         m = getattr(m, n)
     return m
 
-def _import_from_string(long_name):
+def _import_from_string(long_name, file_only=False):
     try:
         last_dot = long_name.rfind('.')
         module_name = long_name[:last_dot]
         function_name = long_name[last_dot+1:]
         module = _correct_import(module_name)
-        func = vars(module)[function_name]
+        if not file_only:
+            func = vars(module)[function_name]
+        else:
+            func = None
     except Exception, ex:
         func = None
     return func

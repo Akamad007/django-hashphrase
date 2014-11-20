@@ -1,23 +1,4 @@
 hashphrase_functions = None
-def init_package():
-    from django.conf import settings
-    from models import _import_from_string
-    import datetime
-    global hashphrase_functions
-    if hasattr(settings, 'HASHPHRASE_CURRENT_DATETIME_FUNCTION'):
-        current_datetime_function = _import_from_string(settings.HASHPHRASE_CURRENT_DATETIME_FUNCTION)
-        if not current_datetime_function:
-            current_datetime_function = datetime.datetime.now()
-    else:
-        current_datetime_function = datetime.datetime.now()
-    hashphrase_functions = Hashlink(current_datetime_function=current_datetime_function)
-
-    if hasattr(settings, 'HASHPHRASE_HANDLERS'):
-        for func_str in settings.HASHPHRASE_HANDLERS:
-            #trigger parsing so they registered
-            _import_from_string(func_str)
-
-
 
 class Hashlink(object):
     def __init__(self, *args, **kwargs):
@@ -50,6 +31,25 @@ class Hashlink(object):
 
     def get_module_and_function(self, category_name):
         return self.function_map.get(category_name, (None,None))
+
+
+def init_package():
+    from django.conf import settings
+    from models import _import_from_string
+    import datetime
+    global hashphrase_functions
+    if hasattr(settings, 'HASHPHRASE_CURRENT_DATETIME_FUNCTION'):
+        current_datetime_function = _import_from_string(settings.HASHPHRASE_CURRENT_DATETIME_FUNCTION)
+        if not current_datetime_function:
+            current_datetime_function = datetime.datetime.now()
+    else:
+        current_datetime_function = datetime.datetime.now()
+    hashphrase_functions = Hashlink(current_datetime_function=current_datetime_function)
+
+    if hasattr(settings, 'HASHPHRASE_HANDLERS'):
+        for func_str in settings.HASHPHRASE_HANDLERS:
+            #trigger parsing so they registered
+            _import_from_string(func_str, file_only=True)
 
 
 

@@ -1,6 +1,5 @@
 from django.template import RequestContext
 from django.http import HttpResponseNotFound, HttpResponse
-from helpers import hashphrase_register
 
 def hash_link(request, key):
     """
@@ -21,12 +20,11 @@ def hash_link(request, key):
     return HttpResponse('Invalid link.')
 
 
-@hashphrase_register('default_action')
 def default_action_on_error(request, has_error, error_code, hash_link, content_obj):
     return HttpResponseNotFound("Permission denied.")
 
 
-@hashphrase_register('default_action2')
+
 def test_success(request, has_error, error_code, hash_link, content_obj):
     """
     use hashphrase_register decorator to register this function to be called when

@@ -1,10 +1,32 @@
+hashphrase_functions = None
+def init_package():
+    from django.conf import settings
+    from models import _import_from_string
+    import datetime
+    global hashphrase_functions
+    if hasattr(settings, 'HASHPHRASE_CURRENT_DATETIME_FUNCTION'):
+        current_datetime_function = _import_from_string(settings.HASHPHRASE_CURRENT_DATETIME_FUNCTION)
+        if not current_datetime_function:
+            current_datetime_function = datetime.datetime.now()
+    else:
+        current_datetime_function = datetime.datetime.now()
+    hashphrase_functions = Hashlink(current_datetime_function=current_datetime_function)
+
+    if hasattr(settings, 'HASHPHRASE_HANDLERS'):
+        for func_str in settings.HASHPHRASE_HANDLERS:
+            #trigger parsing so they registered
+            _import_from_string(func_str)
+
+
+
 class Hashlink(object):
     def __init__(self, *args, **kwargs):
         import datetime
         self.current_datetime_function = kwargs.get('current_datetime_function', datetime.datetime.now)
         super(Hashlink, self).__init__()
 
-        self.function_map ={}
+        self.function_map = dict(default_action=("hashphrase.views","default_action_on_error"),
+            default_action2=("hashphrase.views","test_success"))
 
 
     def register(self, category_name, function):
@@ -47,7 +69,6 @@ def hashphrase_register(*setting_args, **setting_kwargs):
         category_name = setting_args[0]
     def second_wrapper(function):
         from functools import wraps
-        from . import hashphrase_functions
         hashphrase_functions.register(category_name, function)
         @wraps(function)
         def third_wrapper(request, *args, **kwargs):

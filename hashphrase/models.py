@@ -130,7 +130,7 @@ class HashLink(models.Model):
         if not suggested_action:
             return
 
-        from . import hashphrase_functions
+        from helpers import hashphrase_functions
         from django.conf import settings
 
 

@@ -1,7 +1,6 @@
 from django.template import RequestContext
-from django.shortcuts import render_to_response
 from django.http import HttpResponseNotFound, HttpResponse
-from . import hashphrase_register
+from helpers import hashphrase_register
 
 def hash_link(request, key):
     """
@@ -23,18 +22,28 @@ def hash_link(request, key):
 
 
 @hashphrase_register('default_action')
-def default_action_on_error(request, has_error, error_msg, hash_link, content_obj):
+def default_action_on_error(request, has_error, error_code, hash_link, content_obj):
     return HttpResponseNotFound("Permission denied.")
 
 
 @hashphrase_register('default_action2')
-def test_success(request, has_error, error_msg, hash_link, content_obj):
+def test_success(request, has_error, error_code, hash_link, content_obj):
     """
     use hashphrase_register decorator to register this function to be called when
     users click on the email link.
     be sure to check has_error. If not verified, has_error = True
     See HashLink class for error code definition
     """
+    if has_error or not hash_link or not content_obj:
+        from hashphrase.models import HashLink
+        ret = "Invalid email link."
+        if error_code == HashLink.ERR_EXPIRED:
+            ret = "Link expired."
+        elif error_code == HashLink.ERR_INVALID_USER:
+            ret = "Needs to login."
+        elif error_code == HashLink.ERR_INVALID_LINK:
+            ret = "Invalid link."
+        return HttpResponse(ret)
     return HttpResponse("Successful.")
 
 

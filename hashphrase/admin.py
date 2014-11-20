@@ -6,6 +6,7 @@ class HashLinkAdmin(admin.ModelAdmin):
                     'object_id',
                     'content_object',
                     'user',
+                    'allow_anonymous',
                     'expiration_datetime',
                     'creation_datetime',
                     'key', 'action']

@@ -17,7 +17,7 @@ def _import_from_string(long_name):
         function_name = long_name[last_dot+1:]
         module = _correct_import(module_name)
         func = vars(module)[function_name]
-    except:
+    except Exception, ex:
         func = None
     return func
 
@@ -48,21 +48,27 @@ class HashLink(models.Model):
     def gen_key(cls, user, other_object, cur_datetime, allow_anonymous=False, expiration_datetime=None, action=''):
         import string, random
 
-        max_loop = 3
-        random_str = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(cls.KEY_LENGTH))
-        while True:
-            #make sure no conflict
-            if not HashLink.objects.filter(key=random_str).exists():
-                break
-
+        #reduce duplicate
+        existing = HashLink.objects.filter(user=user, object_id=other_object.id, allow_anonymous=allow_anonymous, action=action)
+        if existing.count():
+            r = existing[0]
+            random_str = r.key
+        else:
+            max_loop = 3
             random_str = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(cls.KEY_LENGTH))
-            max_loop -= 1
-            if max_loop < 0:
-                break #Todo: log it.
+            while True:
+                #make sure no conflict
+                if not HashLink.objects.filter(key=random_str).exists():
+                    break
 
-        r = HashLink(content_object=other_object, user=user, creation_datetime=cur_datetime,key=random_str,
-            allow_anonymous=allow_anonymous, expiration_datetime=expiration_datetime, action=action)
-        r.save()
+                random_str = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(cls.KEY_LENGTH))
+                max_loop -= 1
+                if max_loop < 0:
+                    break #Todo: log it.
+
+            r = HashLink(content_object=other_object, user=user, creation_datetime=cur_datetime,key=random_str,
+                allow_anonymous=allow_anonymous, expiration_datetime=expiration_datetime, action=action)
+            r.save()
         import base64
         encoded_category_name = base64.urlsafe_b64encode(str(action))
         return "%s%s" %(random_str, encoded_category_name)

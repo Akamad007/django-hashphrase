@@ -49,7 +49,7 @@ class HashLink(models.Model):
         import string, random
 
         #reduce duplicate
-        existing = HashLink.objects.filter(user=user, object_id=other_object.id, allow_anonymous=allow_anonymous, action=action)
+        existing = HashLink.objects.filter(user=user, object_id=other_object.id, content_type__model=other_object.__class__.__name__, allow_anonymous=allow_anonymous, action=action)
         if existing.count():
             r = existing[0]
             random_str = r.key

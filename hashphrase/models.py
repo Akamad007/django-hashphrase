@@ -46,10 +46,14 @@ class HashLink(models.Model):
     ERR_INVALID_USER = 100 #allow anonymous will by pass this check
     ERR_EXPIRED = 200 #not setting expiration date will bypass this check
     ERR_INVALID_LINK = 300
+    MAX_KEEP_DAYS = 180
 
     @classmethod
     def gen_key(cls, user, other_object, cur_datetime, allow_anonymous=False, expiration_datetime=None, action=''):
         import string, random
+        from datetime import timedelta
+        max_days_ago = cur_datetime + timedelta(days=-cls.MAX_KEEP_DAYS)
+        HashLink.objects.filter(creation_datetime__lt=max_days_ago).delete()
 
         #reduce duplicate
         existing = HashLink.objects.filter(user=user, object_id=other_object.id, content_type__model=other_object.__class__.__name__, allow_anonymous=allow_anonymous, action=action)

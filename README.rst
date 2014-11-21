@@ -21,6 +21,11 @@ Quick start
 
     url(r'^hl/', include('hashphrase.urls')),
 
+3. Also put this at the end of your urls.py like this::
+
+    from hashphrase import hashphraseviews_autodiscover
+    hashphraseviews_autodiscover() #autodiscover hashphraseviews.py in apps
+
 3. To generate a link::
 
     from hashphrase.models import HashLink
@@ -35,10 +40,10 @@ Quick start
     # Then generate for example "http://yourhost.com/hl/"+hash_phrase+"/"
     # that lick will call the "registered" function
 
-4. To register a function::
+4. To register a function, create a file called hashphraseviews.py and put the function in it.::
 
-    from hashphrase.helpers import hashphrase_register
-    @hashphrase_register('my_click_handler')
+    from hashphrase import hashphrase_register
+    @hashphrase_register('my_click_handler')  #name must match action when creating the link
     def test_success(request, has_error, error_code, hash_link, content_obj):
         """
         use hashphrase_register decorator to register this function to be called when
@@ -57,14 +62,4 @@ Quick start
                 ret = "Invalid link."
             return HttpResponse(ret)
         return HttpResponse("Successful.")
-
-
-
-5. To register a function, required::
-
-    from hashphrase import hashphrase_register
-    In your settings.py, add HASHPHRASE_HANDLERS that should list where your registered functions are.
-    For example,
-    HASHPHRASE_HANDLERS = ['views.handler1', 'views.handler2']
-    This is required because not all Django/Python .py, except for __init__.py, are imported when Django server first runs.
 

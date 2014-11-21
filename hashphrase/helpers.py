@@ -46,10 +46,10 @@ def init_package():
         current_datetime_function = datetime.datetime.now()
     hashphrase_functions = Hashlink(current_datetime_function=current_datetime_function)
 
-    if hasattr(settings, 'HASHPHRASE_HANDLERS'):
-        for func_str in settings.HASHPHRASE_HANDLERS:
-            #trigger parsing so they registered
-            _import_from_string(func_str, file_only=True)
+#    if hasattr(settings, 'HASHPHRASE_HANDLERS'):
+#        for func_str in settings.HASHPHRASE_HANDLERS:
+#            #trigger parsing so they registered
+#            _import_from_string(func_str, file_only=True)
 
 
 
@@ -78,3 +78,39 @@ def hashphrase_register(*setting_args, **setting_kwargs):
         return second_wrapper(function)
     else:
         return second_wrapper
+
+try:
+    from importlib import import_module
+except:
+    from django.utils.importlib import import_module
+
+LOADING_HASHPHRASE = False
+def hashphraseviews_autodiscover():
+    """
+    Auto-discover INSTALLED_APPS hashphraseviews.py modules and fail silently when
+    not present. NOTE: dajaxice_autodiscover was inspired/copied from
+    django.contrib.admin autodiscover
+    """
+    global LOADING_HASHPHRASE
+    if LOADING_HASHPHRASE:
+        return
+    LOADING_HASHPHRASE = True
+
+    import imp
+    from django.conf import settings
+
+    for app in settings.INSTALLED_APPS:
+
+        try:
+            app_path = import_module(app).__path__
+        except AttributeError:
+            continue
+
+        try:
+            imp.find_module('hashphraseviews', app_path)
+        except ImportError:
+            continue
+
+        import_module("%s.hashphraseviews" % app)
+
+    LOADING_HASHPHRASE = False

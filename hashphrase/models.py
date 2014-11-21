@@ -164,3 +164,8 @@ class HashLink(models.Model):
                 print ex
 
         return
+
+
+def generate_hashphrase(user, other_object, cur_datetime, allow_anonymous=False, expiration_datetime=None, action=''):
+    return HashLink.gen_key(user, other_object, cur_datetime, allow_anonymous=allow_anonymous,
+        expiration_datetime=expiration_datetime, action=action)

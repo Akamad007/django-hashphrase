@@ -28,14 +28,14 @@ Quick start
 
 3. To generate a link::
 
-    from hashphrase.models import HashLink
+    from hashphrase import generate_hashphrase
 
     from django.contrib.auth.models import User
     any_object = User.objects.get(id=1)
 
     import datetime
     action = 'my_click_handler'
-    hash_phrase = HashLink.gen_key(request.user, any_object, datetime.datetime.now(), action=action)
+    hash_phrase = generate_hashphrase(request.user, any_object, datetime.datetime.now(), action=action)
 
     # Then generate for example "http://yourhost.com/hl/"+hash_phrase+"/"
     # that lick will call the "registered" function
@@ -52,7 +52,7 @@ Quick start
         See HashLink class for error code definition
         """
         if has_error or not hash_link or not content_obj:
-            from hashphrase.models import HashLink
+            from hashphrase import HashLink
             ret = "Invalid email link."
             if error_code == HashLink.ERR_EXPIRED:
                 ret = "Link expired."

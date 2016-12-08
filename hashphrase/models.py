@@ -1,28 +1,13 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.conf import settings
 
 
-def _correct_import(name):
-    m = __import__(name)
-    for n in name.split(".")[1:]:
-        m = getattr(m, n)
-    return m
+from helpers import hashphrase_functions, _correct_import
 
-def _import_from_string(long_name, file_only=False):
-    try:
-        last_dot = long_name.rfind('.')
-        module_name = long_name[:last_dot]
-        function_name = long_name[last_dot+1:]
-        module = _correct_import(module_name)
-        if not file_only:
-            func = vars(module)[function_name]
-        else:
-            func = None
-    except Exception, ex:
-        func = None
-    return func
+
 
 
 class HashLink(models.Model):
@@ -32,7 +17,7 @@ class HashLink(models.Model):
     ALLOWED_MODELS = models.Q(model='Alert') | models.Q(model='Appointment')
     content_type = models.ForeignKey(ContentType, limit_choices_to=ALLOWED_MODELS) #here the real type of content object is stored
     object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     user = models.ForeignKey(User, related_name='hashphrase_user')
     expiration_datetime = models.DateTimeField(null=True,blank=True)
@@ -122,8 +107,6 @@ class HashLink(models.Model):
 
         return False
 
-
-
     @classmethod
     def verify_and_call_action_function(cls, request, raw_key, return_dict):
 
@@ -136,11 +119,6 @@ class HashLink(models.Model):
 
         if not suggested_action:
             return
-
-        from helpers import hashphrase_functions
-        from django.conf import settings
-
-
         action_module, action_function = hashphrase_functions.get_module_and_function('default_action') #global default
         if suggested_action in hashphrase_functions.get_category_names():
             action_module, action_function = hashphrase_functions.get_module_and_function(suggested_action)

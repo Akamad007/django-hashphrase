@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 
 def _correct_import(name):
@@ -32,7 +32,7 @@ class HashLink(models.Model):
     ALLOWED_MODELS = models.Q(model='Alert') | models.Q(model='Appointment')
     content_type = models.ForeignKey(ContentType, limit_choices_to=ALLOWED_MODELS) #here the real type of content object is stored
     object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     user = models.ForeignKey(User, related_name='hashphrase_user')
     expiration_datetime = models.DateTimeField(null=True,blank=True)

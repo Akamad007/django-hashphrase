@@ -1,6 +1,6 @@
-from django.conf.urls import *
+import hashphrase.views as hashphrase_view
 
-urlpatterns = patterns('',
-    (r'^test/', 'hashphrase.views.hash_link_test'),
-    (r'^(?P<key>.*)/$', 'hashphrase.views.hash_link'),
-)
+urlpatterns = [
+    (r'^test/', hashphrase_view.hash_link_test),
+    (r'^(?P<key>.*)/$', hashphrase_view.hash_link),
+]

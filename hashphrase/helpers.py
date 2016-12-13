@@ -1,4 +1,5 @@
-hashphrase_functions = None
+import datetime
+from django.conf import settings
 
 class Hashlink(object):
     def __init__(self, *args, **kwargs):
@@ -33,25 +34,37 @@ class Hashlink(object):
         return self.function_map.get(category_name, (None,None))
 
 
+def _correct_import(name):
+    m = __import__(name)
+    for n in name.split(".")[1:]:
+        m = getattr(m, n)
+    return m
+
+def _import_from_string(long_name, file_only=False):
+    try:
+        last_dot = long_name.rfind('.')
+        module_name = long_name[:last_dot]
+        function_name = long_name[last_dot+1:]
+        module = _correct_import(module_name)
+        if not file_only:
+            func = vars(module)[function_name]
+        else:
+            func = None
+    except Exception, ex:
+        func = None
+    return func
+
+
 def init_package():
-    from django.conf import settings
-    from models import _import_from_string
-    import datetime
-    global hashphrase_functions
     if hasattr(settings, 'HASHPHRASE_CURRENT_DATETIME_FUNCTION'):
         current_datetime_function = _import_from_string(settings.HASHPHRASE_CURRENT_DATETIME_FUNCTION)
         if not current_datetime_function:
             current_datetime_function = datetime.datetime.now()
     else:
         current_datetime_function = datetime.datetime.now()
-    hashphrase_functions = Hashlink(current_datetime_function=current_datetime_function)
+    return Hashlink(current_datetime_function=current_datetime_function)
 
-#    if hasattr(settings, 'HASHPHRASE_HANDLERS'):
-#        for func_str in settings.HASHPHRASE_HANDLERS:
-#            #trigger parsing so they registered
-#            _import_from_string(func_str, file_only=True)
-
-
+hashphrase_functions = init_package()
 
 def hashphrase_register(*setting_args, **setting_kwargs):
     """

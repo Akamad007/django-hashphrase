@@ -1,5 +1,6 @@
 from django.template import RequestContext
 from django.http import HttpResponseNotFound, HttpResponse
+from helpers import hashphrase_functions
 
 def hash_link(request, key):
     """
@@ -22,7 +23,6 @@ def hash_link(request, key):
 
 def default_action_on_error(request, has_error, error_code, hash_link, content_obj):
     return HttpResponseNotFound("Permission denied.")
-
 
 
 def test_success(request, has_error, error_code, hash_link, content_obj):
@@ -53,8 +53,6 @@ def hash_link_test(request):
     from models import HashLink
     from django.contrib.auth.models import User
     user = User.objects.get(id=1)
-
-    from . import hashphrase_functions
 
     cur_datetime = hashphrase_functions.current_datetime_function()
     action = 'default_action2'
